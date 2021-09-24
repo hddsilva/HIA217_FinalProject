@@ -1,0 +1,142 @@
+---
+title: "Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+```
+
+```{r}
+library(dplyr)
+library(MASS)
+library(ROCR)
+
+readmit2 <- read.csv("~/Documents/Multivariable\ Analysis/final_project/archive/readmit2.csv", header = TRUE, stringsAsFactors = TRUE)
+
+readmit2$admission_source_id <- as.factor(readmit2$admission_source_id)
+readmit2$admission_type_id <- as.factor(readmit2$admission_type_id)
+readmit2$discharge_disposition_id <- as.factor(readmit2$discharge_disposition_id)
+
+attach(readmit2)
+```
+Missing data was removed for the variables of interest. The following variables were missing too much data to justify including them in the full model: max glucose serum, A1C result, and weight.
+
+```{r, echo=FALSE}
+readmit3 <- readmit2 %>% 
+  filter(!is.na(insulin2),
+         !is.na(diabetesMed2),
+         !is.na(age2),
+         !is.na(number_inpatient),
+         !is.na(time_in_hospital),
+         !is.na(number_emergency),
+         !is.na(number_diagnoses),
+         !is.na(discharge_disposition_id))
+```
+
+Descriptives
+Readmitted within 30 days
+```{r}
+transform(table(readmit3$readmitted30), Percent = 100*prop.table(Freq), cumFreq = cumsum(Freq))
+```
+Age
+```{r}
+summary(readmit3$age2)
+```
+
+Sex
+```{r}
+transform(table(readmit3$gender2), Percent = 100*prop.table(Freq), cumFreq = cumsum(Freq))
+```
+A1C
+```{r}
+transform(table(readmit3$A1Cresult2), Percent = 100*prop.table(Freq), cumFreq = cumsum(Freq))
+```
+Glucose serum
+```{r}
+transform(table(readmit3$max_glu_serum2), Percent = 100*prop.table(Freq), cumFreq = cumsum(Freq))
+```
+Time in hospital
+```{r}
+summary(readmit3$time_in_hospital)
+```
+
+Full model
+```{r, echo=FALSE}
+readmit3.logit_full <- glm(data = readmit3, readmitted30 ~ number_inpatient +  number_emergency + discharge_disposition_id + num_medications + admission_type_id + number_diagnoses + metformin + glipizide + insulin2, family = "binomial")
+summary(readmit3.logit_full)
+# Odds Ratio
+#exp(cbind(OR = coef(readmit3.logit_full),
+#          confint(readmit3.logit_full)))
+```
+
+Forward selection
+```{r, echo=FALSE}
+# Forward Selection
+
+readmit3.logit_intercept <- glm(data = readmit3, readmitted30 ~ 1, family = "binomial")
+readmit3.logit_forward <- stepAIC(readmit3.logit_intercept, direction = "forward", scope = formula(readmit3.logit_full), trace = FALSE)
+readmit3.logit_forward$anova
+```
+
+Backward elimination
+```{r, echo=FALSE}
+# Backward Elimination
+readmit3.logit_backward <- stepAIC(readmit3.logit_full, direction = "backward", scope = formula(readmit3.logit_full), trace = FALSE)
+readmit3.logit_backward$anova
+```
+
+Final model (race eliminated)
+```{r, echo=FALSE}
+# Final Model
+readmit3.logit_final <- glm(data = readmit3, readmitted30 ~ number_inpatient + discharge_disposition_id + num_medications + number_diagnoses + metformin + insulin2, family = "binomial")
+summary(readmit3.logit_final)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_final),
+          confint(readmit3.logit_final)))
+```
+
+ROC analysis
+```{r, echo=FALSE}
+# ROC Analysis
+prob = predict(readmit3.logit_final, type = "response")
+ROCRpred <- prediction(prob, readmit3$readmitted30)
+
+ROCRperf <- performance(ROCRpred, measure = "auc")
+print(ROCRperf@y.values)
+
+ROCRperf <- performance(ROCRpred, measure = "tpr", x.measure = "fpr")
+plot(ROCRperf, lwd = 2, xlab="1-Specificity", ylab="Sensitivity")
+abline(0, 1, lwd = 2, lty = 2) #add a 45 degree dashed line
+```
+
+Numbers
+```{r, echo=FALSE}
+sum(readmit3$discharge_disposition_id==1)
+sum(readmit3$discharge_disposition_id==2)
+sum(readmit3$discharge_disposition_id==3)
+sum(readmit3$discharge_disposition_id==4)
+sum(readmit3$discharge_disposition_id==6)
+sum(readmit3$discharge_disposition_id==7)
+sum(readmit3$discharge_disposition_id==8)
+sum(readmit3$discharge_disposition_id==13)
+sum(readmit3$discharge_disposition_id==14)
+sum(readmit3$discharge_disposition_id==15)
+sum(readmit3$discharge_disposition_id==22)
+sum(readmit3$discharge_disposition_id==23)
+sum(readmit3$discharge_disposition_id==24)
+sum(readmit3$discharge_disposition_id==28)
+sum(readmit3$metformin=="Down")
+sum(readmit3$metformin=="Up")
+sum(readmit3$metformin=="Steady")
+sum(readmit3$metformin=="No")
+sum(readmit3$insulin2=="Down")
+sum(readmit3$insulin2=="Up")
+sum(readmit3$insulin2=="Steady")
+sum(readmit3$insulin2=="No")
+sum(!is.na(num_medications))
+sum(!is.na(number_diagnoses))
+sum(!is.na(number_inpatient))
+```

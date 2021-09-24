@@ -1,0 +1,189 @@
+---
+title: "exploration"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+```
+
+```{r summary, echo=FALSE}
+readmit2 <- read.csv("~/Documents/Multivariable\ Analysis/final_project/archive/readmit2.csv", header = TRUE, stringsAsFactors = TRUE)
+
+attach(readmit2)
+
+summary(readmit2)
+```
+
+Race
+```{r race, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$race2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$race2), margin = 2),  digits = 1),  margin = 1))
+```
+Gender
+```{r gender, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$gender2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$gender2), margin = 2),  digits = 1),  margin = 1))
+```
+Max Glu Serum
+```{r glu, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$max_glu_serum2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$max_glu_serum2), margin = 2),  digits = 1),  margin = 1))
+```
+A1C
+```{r a1c, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$A1Cresult2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$A1Cresult2), margin = 2),  digits = 1),  margin = 1))
+```
+Insulin
+```{r insulin, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$insulin2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$insulin2), margin = 2),  digits = 1),  margin = 1))
+```
+Change
+```{r change, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$change2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$change2), margin = 2),  digits = 1),  margin = 1))
+```
+DiabetesMed
+```{r diabetesmed, echo=FALSE}
+cbind(addmargins(table(readmit2$readmitted30, readmit2$diabetesMed2), margin = 1),
+      addmargins(round(100*prop.table(table(readmit2$readmitted30, readmit2$diabetesMed2), margin = 2),  digits = 1),  margin = 1))
+```
+Age
+```{r age, echo=FALSE}
+boxplot(age2~readmitted30,data=readmit2)
+```
+Weight
+```{r weight, echo=FALSE}
+boxplot(weight2~readmitted30,data=readmit2)
+```
+Time in hospital
+```{r hosptime, echo=FALSE}
+boxplot(time_in_hospital~readmitted30,data=readmit2)
+```
+Num lab procedures
+```{r lab, echo=FALSE}
+boxplot(num_lab_procedures~readmitted30,data=readmit2)
+```
+Num procedures
+```{r procedures, echo=FALSE}
+boxplot(num_procedures~readmitted30,data=readmit2)
+```
+Num medications
+```{r medications, echo=FALSE}
+boxplot(num_medications~readmitted30,data=readmit2)
+```
+Num outpatient
+```{r outpatient, echo=FALSE}
+boxplot(number_outpatient~readmitted30,data=readmit2)
+```
+Num emergency
+```{r emergency, echo=FALSE}
+boxplot(number_emergency~readmitted30,data=readmit2)
+```
+Num inpatient
+```{r inpatient, echo=FALSE}
+boxplot(number_inpatient~readmitted30,data=readmit2)
+```
+Num diagnoses
+```{r diagnoses, echo=FALSE}
+boxplot(number_diagnoses~readmitted30,data=readmit2)
+```
+Unadjusted model - race
+```{r unadj_race, echo=FALSE}
+readmit2.logit_race <- glm(data = readmit2, readmitted30 ~ race2, family = "binomial")
+summary(readmit2.logit_race)
+```
+Unadjusted model - max glu serum
+```{r unadj_glu, echo=FALSE}
+readmit2.logit_glu <- glm(data = readmit2, readmitted30 ~ max_glu_serum2, family = "binomial")
+summary(readmit2.logit_glu)
+```
+Unadjusted model - A1C
+```{r unadj_a1c, echo=FALSE}
+readmit2.logit_a1c <- glm(data = readmit2, readmitted30 ~ A1Cresult2, family = "binomial")
+summary(readmit2.logit_a1c)
+```
+Unadjusted model - Insulin
+```{r unadj_ins, echo=FALSE}
+readmit3.logit_ins <- glm(data = readmit3, readmitted30 ~ insulin2, family = "binomial")
+summary(readmit3.logit_ins)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_ins),
+          confint(readmit3.logit_ins)))
+```
+Unadjusted model - Metformin
+```{r unadj_ins, echo=FALSE}
+readmit3.logit_met <- glm(data = readmit3, readmitted30 ~ metformin, family = "binomial")
+summary(readmit3.logit_met)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_met),
+          confint(readmit3.logit_met)))
+```
+
+Unadjusted model - Change
+```{r unadj_ch, echo=FALSE}
+readmit2.logit_ch <- glm(data = readmit2, readmitted30 ~ change2, family = "binomial")
+summary(readmit2.logit_ch)
+```
+Unadjusted model - DiabetesMed
+```{r unadj_dM, echo=FALSE}
+readmit2.logit_dM <- glm(data = readmit2, readmitted30 ~ diabetesMed2, family = "binomial")
+summary(readmit2.logit_dM)
+```
+Unadjusted model - Weight
+```{r unadj_wt, echo=FALSE}
+readmit2.logit_wt <- glm(data = readmit2, readmitted30 ~ weight2, family = "binomial")
+summary(readmit2.logit_wt)
+```
+Unadjusted model - Age
+```{r unadj_age, echo=FALSE}
+readmit2.logit_age <- glm(data = readmit2, readmitted30 ~ age2, family = "binomial")
+summary(readmit2.logit_age)
+```
+Unadjusted model - Number inpatient
+```{r unadj_inp, echo=FALSE}
+readmit3.logit_inp <- glm(data = readmit3, readmitted30 ~ number_inpatient, family = "binomial")
+summary(readmit3.logit_inp)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_inp),
+          confint(readmit3.logit_inp)))
+```
+Unadjusted model - Number diagnoses
+```{r unadj_dx, echo=FALSE}
+readmit3.logit_dx <- glm(data = readmit3, readmitted30 ~ number_diagnoses, family = "binomial")
+summary(readmit3.logit_dx)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_dx),
+          confint(readmit3.logit_dx)))
+```
+Unadjusted model - Number medications
+```{r unadj_dx, echo=FALSE}
+readmit3.logit_med <- glm(data = readmit3, readmitted30 ~ num_medications, family = "binomial")
+summary(readmit3.logit_med)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_med),
+          confint(readmit3.logit_med)))
+```
+Unadjusted model - Discharge location
+```{r unadj_ins, echo=FALSE}
+readmit3.logit_dis <- glm(data = readmit3, readmitted30 ~ discharge_disposition_id, family = "binomial")
+summary(readmit3.logit_dis)
+# Odds Ratio
+exp(cbind(OR = coef(readmit3.logit_dis),
+          confint(readmit3.logit_dis)))
+```
+
+Based on this exploration, the following variables were chosen to be of interest, due to either being a significant predictor of readmission within 30 days or a conceptual likelihood that they would be important:
+
+Race
+Max Glu Serum
+A1C
+Insulin *
+Change *
+DiabetesMed *
+Weight
+Age *
+Number inpatient *
+Number diagnoses *
