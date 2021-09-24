@@ -1,7 +1,6 @@
 # Predicting Readmission of Diabetic Patients: Identifying risk factors leading to hospital readmission of diabetic patients within 30 days
 
-These scripts were used in my final project for HIA 217: Multivariable Analysis and Data Visualization. The project's aim was to predict diabetic patients' 30 day 
-hospital readmission by performing a logistic regression.
+These scripts were used in my final project for HIA 217: Multivariable Analysis and Data Visualization. The project's aim was to predict diabetic patients' 30 day hospital readmission by performing a logistic regression.
 
 **Dataset:** Hospital admission data from 130 U.S. hospitals between the years 1999-2008. Data from 101,766 patients. Sourced from Kaggle.com. 
 https://www.kaggle.com/saurabhtayal/diabetic-patients-readmission-prediction?select=diabetic_data.csv
@@ -38,6 +37,18 @@ Number of inpatient visits in year leading up to encounter
 12x greater likelihood if discharged to a psychiatric hospital (although not a strong conclusion due to the small N)
 
 **Interpretations:**
+- Decreasing Metformin and Insulin during patient encounters increases a patients likelihood of readmission with 30 days
+- Diabetic patients in Long Term Care facilities may be receiving the needed healthcare support to reduce hospital readmissions 
+- Prediction models may help us in determining how many diabetic patients will be returning to improve availability and staffing estimates
+
+**Limitations**
+- Missing data in important variables (weight, A1C readings, glucose serum results)
+- Type 1 versus Type 2 diagnosis unavailable
+- Medication dosage change details unavailable
+
+
+
+
 
 
 
